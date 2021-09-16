@@ -1,8 +1,7 @@
 <template>
-    <div>
-
-    </div>
+  <div class="row"><h3></h3></div>
 </template>
+
 
 <script>
     export default {
@@ -10,5 +9,4 @@
             $nuxt.$router.push("/dashboard");
         }
     }
-
-</script>
+</script> 
