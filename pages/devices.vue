@@ -94,7 +94,7 @@
           <el-table-column label="Actions">
             <div slot-scope="{ row, $index }">
 
-            <el-tooltip content="Saver Stat">                
+            <el-tooltip content="Saver Stat" style="margin-right:10px">                
                 <i class="fas fa-database " :class="{'text-success' : row.saverRule, 'text-dark' : !row.saverRule}" ></i>
             </el-tooltip>
                 
