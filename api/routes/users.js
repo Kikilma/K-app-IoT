@@ -11,10 +11,7 @@ import User from "../models/user.js";
 
 //AUTH
 
-
 //================LOGIN=======================
-
-
 router.post("/login", async (req, res) => {
 
 
@@ -55,11 +52,12 @@ router.post("/login", async (req, res) => {
       return res.status(401).json(toSend);
   }
 
-
+//=====================END-LOGIN====================
+//=====================END-LOGIN====================
 
 });
 
-//=====================END-LOGIN====================
+
 
 //===================REGISTER=====================
 router.post("/register", async (req, res) => {
@@ -99,23 +97,10 @@ router.post("/register", async (req, res) => {
       res.status(500).json(toSend);
 
   }
+  //===============END-REGISTER========================
+  //===============END-REGISTER========================
 });
-//===============END-REGISTER========================
 
 
-
-router.get("/new-user", async (req, res) => {
-  try {
-    const user = await User.create({
-      name: "Benjamin",
-      email: "a@b.com",
-      password: "121212"
-    });
-    res.json({ status: "success" });
-  } catch (error) {
-    console.log(error);
-    res.json({ status: "fail" });
-  }
-});
 
 module.exports = router;
