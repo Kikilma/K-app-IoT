@@ -4,20 +4,83 @@ const router = express.Router();
 const { checkAuth } = require('../middlewares/authentication.js')
 
 
-router.get("/device", checkAuth, (req, res) => {
+/*
+ ___  ______________ _____ _      _____ 
+|  \/  |  _  |  _  \  ___| |    /  ___|
+| .  . | | | | | | | |__ | |    \ `--. 
+| |\/| | | | | | | |  __|| |     `--. \
+| |  | \ \_/ / |/ /| |___| |____/\__/ /
+\_|  |_/\___/|___/ \____/\_____/\____/  
+*/
+import Device from '../models/device.js';
 
-  console.log(req.userData);
 
-  const toSend = {
-    status: "success",
-    data: "[4 , 5 , 5 , 6 ]"
-}
-return res.status(200).json(toSend);
+
+/* 
+  ___  ______ _____ 
+ / _ \ | ___ \_   _|
+/ /_\ \| |_/ / | |  
+|  _  ||  __/  | |  
+| | | || |    _| |_ 
+\_| |_/\_|    \___/ 
+*/
+
+router.get("/device", checkAuth ,(req, res) => {
+
+ 
+
 });
 
-router.post("/device", (req, res) => {
+
+/* 
+{
+   "newDevice":{
+      "dId":"121212",
+      "name":"HOME",
+      "templateName":"esp32 template",
+      "templateId":"ababab"
+   }
+}
+*/
+
+//==============CREATE-DEVICE=================
+//==============CREATE-DEVICE=================
+router.post("/device", checkAuth , async (req, res) => {
+
+  try {
+    const userId = req.userData._id;
+    var newDevice = req.body.newDevice; // validad entradas
+    
+    newDevice.userId = userId;
+    newDevice.createdTime = Date.now();
+  
+    const device = await Device.create(newDevice);
+  
+    const toSend = {
+      status: "success"
+    }
+  
+    return res.json(toSend);
+
+  } catch (error) {
+    console.log("ERROR CREATING NEW DEVICE");
+    console.log(error);
+
+    const toSend = {
+      status: "error",
+      error: error
+    }
+  
+    return res.status(500).json(toSend);
+
+  }
+
+
   
 });
+//==========END-CREATE-DEVICE=================
+//==========END-CREATE-DEVICE=================
+
 
 router.delete("/device", (req, res) => {
   
@@ -26,5 +89,18 @@ router.delete("/device", (req, res) => {
 router.put("/device", (req, res) => {
   
 });
+
+
+/* 
+______ _   _ _   _ _____ _____ _____ _____ _   _  _____ 
+|  ___| | | | \ | /  __ \_   _|_   _|  _  | \ | |/  ___|
+| |_  | | | |  \| | /  \/ | |   | | | | | |  \| |\ `--. 
+|  _| | | | | . ` | |     | |   | | | | | | . ` | `--. \
+| |   | |_| | |\  | \__/\ | |  _| |_\ \_/ / |\  |/\__/ /
+\_|    \___/\_| \_/\____/ \_/  \___/ \___/\_| \_/\____/  
+*/
+
+
+
 
 module.exports = router;
