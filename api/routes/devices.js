@@ -25,43 +25,50 @@ import Device from '../models/device.js';
 \_| |_/\_|    \___/ 
 */
 
-router.get("/device", checkAuth ,(req, res) => {
-
- 
-
-});
-
-
-/* 
-{
-   "newDevice":{
-      "dId":"121212",
-      "name":"HOME",
-      "templateName":"esp32 template",
-      "templateId":"ababab"
-   }
-}
-*/
-
-//==============CREATE-DEVICE=================
-//==============CREATE-DEVICE=================
-router.post("/device", checkAuth , async (req, res) => {
+//===============GET-DEVICE==================
+router.get("/device", checkAuth, async (req, res) => {
 
   try {
+
     const userId = req.userData._id;
-    var newDevice = req.body.newDevice; // validad entradas
-    
+    const devices = await Device.find({ userId: userId });
+
+    const toSend = {
+      status: "success",
+      data: devices
+    };
+
+    res.json(toSend);
+
+  } catch (error) {
+
+    console.log("ERROR GETTING DEVICES")
+
+    const toSend = {
+      status: "error",
+      error: error
+    };
+
+    return res.status(500).json(toSend);
+  }
+});
+
+//===============NEW-DEVICE==================
+router.post("/device", checkAuth, async (req, res) => {
+  try {
+    const userId = req.userData._id;
+    var newDevice = req.body.newDevice;
+
     newDevice.userId = userId;
     newDevice.createdTime = Date.now();
-  
+
     const device = await Device.create(newDevice);
-  
+
     const toSend = {
       status: "success"
-    }
-  
-    return res.json(toSend);
+    };
 
+    return res.json(toSend);
   } catch (error) {
     console.log("ERROR CREATING NEW DEVICE");
     console.log(error);
@@ -69,27 +76,15 @@ router.post("/device", checkAuth , async (req, res) => {
     const toSend = {
       status: "error",
       error: error
-    }
-  
+    };
+
     return res.status(500).json(toSend);
-
   }
-
-
-  
-});
-//==========END-CREATE-DEVICE=================
-//==========END-CREATE-DEVICE=================
-
-
-router.delete("/device", (req, res) => {
-  
 });
 
-router.put("/device", (req, res) => {
-  
-});
+router.delete("/device", (req, res) => {});
 
+router.put("/device", (req, res) => {});
 
 /* 
 ______ _   _ _   _ _____ _____ _____ _____ _   _  _____ 
@@ -99,8 +94,5 @@ ______ _   _ _   _ _____ _____ _____ _____ _   _  _____
 | |   | |_| | |\  | \__/\ | |  _| |_\ \_/ / |\  |/\__/ /
 \_|    \___/\_| \_/\____/ \_/  \___/ \___/\_| \_/\____/  
 */
-
-
-
 
 module.exports = router;
