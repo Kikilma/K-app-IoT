@@ -9,3 +9,20 @@ export const state = () => ({
           state.auth = auth;
       }
   }
+
+
+  export const actions = {
+    readToken() {
+        let auth = null;
+
+        try {
+            auth = JSON.parse(localStorage.getItem('auth'));
+        } catch (error) {
+            console.log(err);
+        }
+
+        //saving auth in state
+        this.commit('setAuth' , auth)
+
+    }
+}
