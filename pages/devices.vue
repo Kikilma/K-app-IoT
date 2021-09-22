@@ -74,7 +74,7 @@
           <h4 class="card-title">Devices</h4>
         </div>
 
-        <el-table :data="devices">
+        <el-table :data="$store.state.devices">
 
           <el-table-column label="#" min-width="50" align="center">
             <div slot-scope="{ row, $index }">
@@ -127,7 +127,7 @@
       </card>
     </div>
 
-    <Json :value="devices"></Json>
+    <Json :value="$store.state.devices"></Json>
 
 
   </div>
@@ -136,7 +136,10 @@
 <script>
 import { Table, TableColumn } from "element-ui";
 import { Select, Option } from "element-ui";
+
+
 export default {
+  middleware: "authenticated",
   components: {
     [Table.name]: Table,
     [TableColumn.name]: TableColumn,
@@ -145,40 +148,23 @@ export default {
   },
   data() {
     return {
-      devices: [
-        {
-          name: "Home",
-          dId: "8888",
-          templateName: "Power Sensor",
-          templateId: "984237562348756ldksjfh",
-          saverRule: false,
-          
-        },
-        {
-          name: "Office",
-          dId: "1111",
-          templateName: "Power Sensor",
-          templateId: "984237562348756ldksjfh",
-          saverRule: true
-        },
-        {
-          name: "Farm",
-          dId: "99999",
-          templateName: "Power Sensor",
-          templateId: "984237562348756ldksjfh",
-          saverRule: true
-        }
-      ]
+      
     };
   },
+ mounted() {
+    this.$store.dispatch("getDevices");
+  },
   methods: {
+    
     deleteDevice(device) {
       alert("DELETING " + device.name);
     },
+
     updateSaverRuleStatus(index) {
         console.log(index);
         this.devices[index].saverRule = !this.devices[index].saverRule;
     }
+    
   }
 };
 </script>
