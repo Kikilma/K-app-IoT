@@ -93,9 +93,17 @@
 
           <el-table-column label="Actions">
             <div slot-scope="{ row, $index }">
-
-            <el-tooltip content="Saver Stat" style="margin-right:10px">                
-                <i class="fas fa-database " :class="{'text-success' : row.saverRule, 'text-dark' : !row.saverRule}" ></i>
+              <el-tooltip
+                content="Saver Status Indicator"
+                style="margin-right:10px"
+              >
+                <i
+                  class="fas fa-database "
+                  :class="{
+                    'text-success': row.saverRule,
+                    'text-dark': !row.saverRule
+                  }"
+                ></i>
             </el-tooltip>
                 
             <el-tooltip content="Data">                
@@ -147,9 +155,7 @@ export default {
     [Select.name]: Select
   },
   data() {
-    return {
-      
-    };
+    return {};
   },
  mounted() {
     this.$store.dispatch("getDevices");
@@ -157,14 +163,42 @@ export default {
   methods: {
     
     deleteDevice(device) {
-      alert("DELETING " + device.name);
+      const axiosHeader = {
+        headers: {
+          token: this.$store.state.auth.token
+        },
+        params: {
+          dId: device.dId
+        }
+      };
+     this.$axios
+        .delete("/device", axiosHeader)
+        .then(res => {
+          if (res.data.status == "success") {
+            this.$notify({
+              type: "success",
+              icon: "tim-icons icon-check-2",
+              message: device.name + " deleted!"
+            });
+            this.$store.dispatch("getDevices");
+          }
+          
+        })
+        .catch(e => {
+          console.log(e);
+          this.$notify({
+            type: "danger",
+            icon: "tim-icons icon-alert-circle-exc",
+            message: " Error deleting " + device.name
+          });
+        });
     },
 
     updateSaverRuleStatus(index) {
         console.log(index);
         this.devices[index].saverRule = !this.devices[index].saverRule;
     }
-    
+
   }
 };
 </script>
