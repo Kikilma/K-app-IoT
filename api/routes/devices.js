@@ -3,14 +3,7 @@ const router = express.Router();
 
 const { checkAuth } = require('../middlewares/authentication.js')
 
-/*
- ___  ______________ _____ _      _____ 
-|  \/  |  _  |  _  \  ___| |    /  ___|
-| .  . | | | | | | | |__ | |    \ `--. 
-| |\/| | | | | | | |  __|| |     `--. \
-| |  | \ \_/ / |/ /| |___| |____/\__/ /
-\_|  |_/\___/|___/ \____/\_____/\____/  
-*/
+
 import Device from '../models/device.js';
 
 /* 
