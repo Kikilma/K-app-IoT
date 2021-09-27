@@ -4,8 +4,8 @@ const { checkAuth } = require('../middlewares/authentication.js')
 const axios = require("axios");
 
 
-import Device from '../models/device.js';
-import SaverRule from '../models/emqx_saver_rule.js';
+import Device from "../models/device.js";
+import SaverRule from "../models/emqx_saver_rule.js";
 
 /* 
   ___  ______ _____ 
@@ -58,9 +58,9 @@ router.post("/device", checkAuth, async (req, res) => {
 
     const device = await Device.create(newDevice);
 
-    createSaverRule(userId,newDevice.dId, true);
+    await createSaverRule(userId, newDevice.dId, true);
 
-    selectDevice(userId, newDevice.dId);
+    await selectDevice(userId, newDevice.dId);
 
     const toSend = {
       status: "success"
