@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
-
 const { checkAuth } = require('../middlewares/authentication.js')
+const axios = require("axios");
 
 
 import Device from '../models/device.js';
+import SaverRule from '../models/emqx_saver_rule.js';
 
 /* 
   ___  ______ _____ 
@@ -15,6 +16,13 @@ import Device from '../models/device.js';
 \_| |_/\_|    \___/ 
 */
 
+
+const auth = {
+  auth: {
+    username: "admin",
+    password: "public"
+  }
+};
 //===============GET-DEVICE========================
 router.get("/device", checkAuth, async (req, res) => {
 
@@ -129,6 +137,10 @@ ______ _   _ _   _ _____ _____ _____ _____ _   _  _____
 \_|    \___/\_| \_/\____/ \_/  \___/ \___/\_| \_/\____/  
 */
 
+setTimeout(() => {
+  createSaverRule("121212","11111",false);
+}, 2000);
+
 async function selectDevice(userId, dId) {
   try {
     const result = await Device.updateMany(
@@ -142,12 +154,81 @@ async function selectDevice(userId, dId) {
     );
 
     return true;
-
   } catch (error) {
     console.log("ERROR IN 'selectDevice' FUNCTION ");
     console.log(error);
     return false;
   }
 }
+/*
+ SAVER RULES FUNCTIONS
+*/
+//get saver rule
+
+//create saver rule
+async function createSaverRule(userId, dId, status) {
+
+  try {
+    const url = "http://localhost:8085/api/v4/rules";
+
+  const topic = userId + "/" + dId + "/+/sdata";
+
+  const rawsql = "SELECT topic, payload FROM \"" + topic + "\" WHERE payload.save = 1";
+
+  var newRule = {
+    rawsql: rawsql,
+    actions: [
+      {
+        name: "data_to_webserver",
+        params: {
+          $resource: global.saverResource.id,
+          payload_tmpl: '{"userId":"' +  userId + '","payload":${payload},"topic":"${topic}"}'
+        }
+      }
+    ],
+    description: "SAVER-RULE",
+    enabled: status
+  };
+
+  //save rule in emqx - grabamos la regla en emqx
+  const res = await axios.post(url, newRule, auth);
+
+  if(res.status === 200 && res.data.data){
+    console.log(res.data.data);
+
+    await SaverRule.create({
+      userId: userId,
+      dId: dId,
+      emqxRuleId: res.data.data.id,
+      status: status
+    });
+
+    return true;
+
+  }else{
+    return false;
+  }
+
+  } catch (error) {
+    console.log("Error creating saver rule")
+    console.log(error);
+    return false;
+  }
+
+
+}
+
+//update saver rule
+
+//delete saver rule
+
 
 module.exports = router;
+
+/*
+userId/dId/temperature -> 
+{
+  value: 21,
+  save: 1
+}
+*/
