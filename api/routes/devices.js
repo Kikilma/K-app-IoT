@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { checkAuth } = require('../middlewares/authentication.js')
+const { checkAuth } = require("../middlewares/authentication.js");
 const axios = require("axios");
-
 
 import Device from "../models/device.js";
 import SaverRule from "../models/emqx_saver_rule.js";
@@ -16,18 +15,33 @@ import SaverRule from "../models/emqx_saver_rule.js";
 \_| |_/\_|    \___/ 
 */
 
-
 const auth = {
   auth: {
     username: "admin",
     password: "public"
   }
 };
-///GET DEVICES
+
+//GET DEVICES
 router.get("/device", checkAuth, async (req, res) => {
   try {
+
     const userId = req.userData._id;
-    const devices = await Device.find({ userId: userId });
+
+    //get devices
+    var devices = await Device.find({ userId: userId });
+
+    //mongoose array to js array
+    devices = JSON.parse(JSON.stringify(devices));
+
+    //get saver rules
+    const saverRules = await getSaverRules(userId);
+
+    //saver rules to -> devices
+    devices.forEach((device, index) => {
+      devices[index].saverRule = saverRules.filter(saverRule => saverRule.dId == device.dId)[0];
+    });
+
 
     const toSend = {
       status: "success",
@@ -86,7 +100,11 @@ router.delete("/device", checkAuth, async (req, res) => {
     const userId = req.userData._id;
     const dId = req.query.dId;
 
+    await deleteSaverRule(dId);
+
     const result = await Device.deleteOne({ userId: userId, dId: dId });
+
+    
 
     const toSend = {
       status: "success",
@@ -107,7 +125,7 @@ router.delete("/device", checkAuth, async (req, res) => {
   }
 });
 
-//UPDATE DEVICE
+//UPDATE DEVICE (SELECTOR)
 router.put("/device", checkAuth, (req, res) => {
   const dId = req.body.dId;
   const userId = req.userData._id;
@@ -127,6 +145,25 @@ router.put("/device", checkAuth, (req, res) => {
   }
 });
 
+//SAVER-RULE STATUS UPDATER
+router.put('/saver-rule', checkAuth, async (req, res) => {
+
+  
+  const rule = req.body.rule;
+
+  console.log(rule)
+
+  await updateSaverRuleStatus(rule.emqxRuleId, rule.status)
+
+  const toSend = {
+    status: "success"
+  };
+
+  res.json(toSend);
+  
+
+});
+
 /* 
 ______ _   _ _   _ _____ _____ _____ _____ _   _  _____ 
 |  ___| | | | \ | /  __ \_   _|_   _|  _  | \ | |/  ___|
@@ -135,8 +172,6 @@ ______ _   _ _   _ _____ _____ _____ _____ _   _  _____
 | |   | |_| | |\  | \__/\ | |  _| |_\ \_/ / |\  |/\__/ /
 \_|    \___/\_| \_/\____/ \_/  \___/ \___/\_| \_/\____/  
 */
-
-
 
 async function selectDevice(userId, dId) {
   try {
@@ -173,6 +208,10 @@ async function getSaverRules(userId) {
 
 //create saver rule
 async function createSaverRule(userId, dId, status) {
+  console.log(userId)
+  console.log(dId);
+  console.log(status)
+
   try {
     const url = "http://localhost:8085/api/v4/rules";
 
@@ -201,9 +240,10 @@ async function createSaverRule(userId, dId, status) {
 
     //save rule in emqx - grabamos la regla en emqx
     const res = await axios.post(url, newRule, auth);
-
+    console.log(res.data.data);
+    
     if (res.status === 200 && res.data.data) {
-      console.log(res.data.data);
+      
 
       await SaverRule.create({
         userId: userId,
@@ -225,22 +265,28 @@ async function createSaverRule(userId, dId, status) {
 
 //update saver rule
 async function updateSaverRuleStatus(emqxRuleId, status) {
-  const url = "http://localhost:8085/api/v4/rules/" + emqxRuleId;
 
-  const newRule = {
-    enabled: status
-  };
+  try {
+    const url = "http://localhost:8085/api/v4/rules/" + emqxRuleId;
 
-  const res = await axios.put(url, newRule, auth);
-
-  if (res.status === 200 && res.data.data) {
-    await SaverRule.updateOne({ emqxRuleId: emqxRuleId }, { status: status });
-    console.log("Saver Rule Status Updated...".green);
-    return {
-      status: "success",
-      action: "updated"
+    const newRule = {
+      enabled: status
     };
+  
+    const res = await axios.put(url, newRule, auth);
+  
+    if (res.status === 200 && res.data.data) {
+      await SaverRule.updateOne({ emqxRuleId: emqxRuleId }, { status: status });
+      console.log("Saver Rule Status Updated...".green);
+      return true;
+    }else{
+      return false;
+    }
+
+  } catch (error) {
+    return false;
   }
+
 }
 
 //delete saver rule
