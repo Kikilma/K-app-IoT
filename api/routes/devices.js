@@ -4,7 +4,7 @@ const { checkAuth } = require("../middlewares/authentication.js");
 const axios = require("axios");
 
 import Device from "../models/device.js";
-import SaverRule from "../models/emqx_saver_rule.js";
+import SaverRule from '../models/emqx_saver_rule.js';
 
 /* 
   ___  ______ _____ 
@@ -18,7 +18,7 @@ import SaverRule from "../models/emqx_saver_rule.js";
 const auth = {
   auth: {
     username: "admin",
-    password: "public"
+    password: "emqxsecret"
   }
 };
 
@@ -172,6 +172,8 @@ ______ _   _ _   _ _____ _____ _____ _____ _   _  _____
 | |   | |_| | |\  | \__/\ | |  _| |_\ \_/ / |\  |/\__/ /
 \_|    \___/\_| \_/\____/ \_/  \___/ \___/\_| \_/\____/  
 */
+
+
 
 async function selectDevice(userId, dId) {
   try {

@@ -166,16 +166,13 @@ export default {
     this.getTemplates();
   },
   methods: {
-       updateSaverRuleStatus(rule) {
-
+    updateSaverRuleStatus(rule) {
+      
       var ruleCopy = JSON.parse(JSON.stringify(rule));
       ruleCopy.status = !ruleCopy.status;
-
-            const toSend = { 
+      const toSend = { 
         rule: ruleCopy 
       };
-
-
       const axiosHeaders = {
         headers: {
           token: this.$store.state.auth.token
@@ -184,18 +181,14 @@ export default {
       this.$axios
         .put("/saver-rule", toSend, axiosHeaders)
         .then(res => {
-          
           if (res.data.status == "success") {
-
             this.$store.dispatch("getDevices");
-
             this.$notify({
               type: "success",
               icon: "tim-icons icon-check-2",
               message: " Device Saver Status Updated"
             });
           }
-          
           return;
         })
         .catch(e => {
@@ -208,7 +201,6 @@ export default {
           return;
         });
     },
-
     deleteDevice(device) {
       const axiosHeaders = {
         headers: {
@@ -369,8 +361,6 @@ export default {
           });
         });
     },
-   
-    
   }
 };
 </script>
