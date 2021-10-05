@@ -18,7 +18,7 @@ import SaverRule from '../models/emqx_saver_rule.js';
 const auth = {
   auth: {
     username: "admin",
-    password: "emqxsecret"
+    password: "public"
   }
 };
 
