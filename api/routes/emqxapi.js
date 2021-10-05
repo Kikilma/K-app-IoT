@@ -37,51 +37,53 @@ async function listResources() {
 
     const res = await axios.get(url, auth);
 
-    console.log(res.data.data.length);
+    
   
-//     const size = res.data.data.length;
+    const size = res.data.data.length;
   
 //     if (res.status === 200) {
   
-//       if (size == 0) {
-//         console.log("***** Creating emqx webhook resources *****".green);
+       if (size == 0) {
+         console.log("***** Creating emqx webhook resources *****".green);
   
-//         createResources();
-//       } else if (size == 2) {
-//         res.data.data.forEach(resource => {
-//           if (resource.description == "alarm-webhook") {
-//             global.alarmResource = resource;
+         createResources();
+      } else if (size == 2) {
+         res.data.data.forEach(resource => {
+           if (resource.description == "alarm-webhook") {
+            global.alarmResource = resource;
   
-//             console.log("▼ ▼ ▼ ALARM RESOURCE FOUND ▼ ▼ ▼ ".bgMagenta);
-//             console.log(global.alarmResource);
-//             console.log("▲ ▲ ▲ ALARM RESOURCE FOUND ▲ ▲ ▲ ".bgMagenta);
-//             console.log("\n");
-//             console.log("\n");
-//           }
+            console.log("▼ ▼ ▼ ALARM RESOURCE FOUND ▼ ▼ ▼ ".bgMagenta);
+             console.log(global.alarmResource);
+             console.log("▲ ▲ ▲ ALARM RESOURCE FOUND ▲ ▲ ▲ ".bgMagenta);
+             console.log("\n");
+             console.log("\n");
+           }
   
-//           if (resource.description == "saver-webhook") {
-//             global.saverResource = resource;
+           if (resource.description == "saver-webhook") {
+            global.saverResource = resource;
   
-//             console.log("▼ ▼ ▼ SAVER RESOURCE FOUND ▼ ▼ ▼ ".bgMagenta);
-//             console.log(global.saverResource);
-//             console.log("▲ ▲ ▲ SAVER RESOURCE FOUND ▲ ▲ ▲ ".bgMagenta);
-//             console.log("\n");
-//             console.log("\n");
-//           }
-//         });
-//       } else {
-//         function printWarning() {
-//           console.log(
-//             "DELETE ALL WEBHOOK EMQX RESOURCES AND RESTART NODE - youremqxdomain:8085/#/resources"
-//               .red
-//           );
-//           setTimeout(() => {
-//             printWarning();
-//           }, 1000);
-//         }
+             console.log("▼ ▼ ▼ SAVER RESOURCE FOUND ▼ ▼ ▼ ".bgMagenta);
+             console.log(global.saverResource);
+             console.log("▲ ▲ ▲ SAVER RESOURCE FOUND ▲ ▲ ▲ ".bgMagenta);
+             console.log("\n");
+             console.log("\n");
+          }
+         });
+       } else {
+         function printWarning() {
+           console.log(
+             "DELETE ALL WEBHOOK EMQX RESOURCES AND RESTART NODE - youremqxdomain:8085/#/resources"
+               .red
+           );
+           setTimeout(() => {
+             printWarning();
+           }, 1000);
+           
+         }
   
-//         printWarning();
-//       }
+         printWarning();
+       }
+       
 //     }else{
 //         console.log("Error in emqx api");
 //     }
