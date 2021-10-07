@@ -4,7 +4,7 @@ const { checkAuth } = require("../middlewares/authentication.js");
 const axios = require("axios");
 
 import Device from "../models/device.js";
-import SaverRule from '../models/emqx_saver_rule.js';
+import SaverRule from "../models/emqx_saver_rule.js";
 
 /* 
   ___  ______ _____ 
@@ -39,10 +39,12 @@ router.get("/device", checkAuth, async (req, res) => {
 
     //saver rules to -> devices
     devices.forEach((device, index) => {
-      devices[index].saverRule = saverRules.filter(saverRule => saverRule.dId == device.dId)[0];
+      devices[index].saverRule = saverRules.filter(
+        saverRule => saverRule.dId == device.dId
+      )[0];
     });
 
-
+  
     const toSend = {
       status: "success",
       data: devices
@@ -69,10 +71,10 @@ router.post("/device", checkAuth, async (req, res) => {
 
     newDevice.userId = userId;
     newDevice.createdTime = Date.now();
+    
+    await createSaverRule(userId, newDevice.dId, true);
 
     const device = await Device.create(newDevice);
-
-    await createSaverRule(userId, newDevice.dId, true);
 
     await selectDevice(userId, newDevice.dId);
 
@@ -151,9 +153,9 @@ router.put('/saver-rule', checkAuth, async (req, res) => {
   
   const rule = req.body.rule;
 
-  console.log(rule)
+  console.log(rule);
 
-  await updateSaverRuleStatus(rule.emqxRuleId, rule.status)
+  await updateSaverRuleStatus(rule.emqxRuleId, rule.status);
 
   const toSend = {
     status: "success"
@@ -210,9 +212,9 @@ async function getSaverRules(userId) {
 
 //create saver rule
 async function createSaverRule(userId, dId, status) {
-  console.log(userId)
+  console.log(userId);
   console.log(dId);
-  console.log(status)
+  console.log(status);
 
   try {
     const url = "http://localhost:8085/api/v4/rules";
