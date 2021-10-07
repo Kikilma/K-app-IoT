@@ -40,6 +40,8 @@ router.get("/device", checkAuth, async (req, res) => {
     //saver rules to -> devices
     devices.forEach((device, index) => {
       devices[index].saverRule = saverRules.filter(
+
+
         saverRule => saverRule.dId == device.dId
       )[0];
     });
@@ -162,21 +164,16 @@ router.put('/saver-rule', checkAuth, async (req, res) => {
   };
 
   res.json(toSend);
-  
-
+ 
 });
 
-/* 
-______ _   _ _   _ _____ _____ _____ _____ _   _  _____ 
+/* ______ _   _ _   _ _____ _____ _____ _____ _   _  _____ 
 |  ___| | | | \ | /  __ \_   _|_   _|  _  | \ | |/  ___|
 | |_  | | | |  \| | /  \/ | |   | | | | | |  \| |\ `--. 
 |  _| | | | | . ` | |     | |   | | | | | | . ` | `--. \
 | |   | |_| | |\  | \__/\ | |  _| |_\ \_/ / |\  |/\__/ /
 \_|    \___/\_| \_/\____/ \_/  \___/ \___/\_| \_/\____/  
 */
-
-
-
 async function selectDevice(userId, dId) {
   try {
     const result = await Device.updateMany(
@@ -196,7 +193,6 @@ async function selectDevice(userId, dId) {
     return false;
   }
 }
-
 /*
  SAVER RULES FUNCTIONS
 */
@@ -209,18 +205,14 @@ async function getSaverRules(userId) {
     return false;
   }
 }
-
 //create saver rule
 async function createSaverRule(userId, dId, status) {
   console.log(userId);
   console.log(dId);
   console.log(status);
-
   try {
     const url = "http://localhost:8085/api/v4/rules";
-
     const topic = userId + "/" + dId + "/+/sdata";
-
     const rawsql =
       'SELECT topic, payload FROM "' + topic + '" WHERE payload.save = 1';
 
@@ -245,7 +237,6 @@ async function createSaverRule(userId, dId, status) {
     //save rule in emqx - grabamos la regla en emqx
     const res = await axios.post(url, newRule, auth);
     console.log(res.data.data);
-    
     if (res.status === 200 && res.data.data) {
       
 
