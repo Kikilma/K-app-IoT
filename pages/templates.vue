@@ -1,11 +1,10 @@
-
 <template>
   <div>
     <!-- WIDGET CONFIGURATOR -->
     <div class="row">
       <card>
         <div slot="header">
-          <h4 class="card-title">Widgets</h4>
+          <h4 class="card-title">Widgets {{iotIndicatorConfig.column}}</h4>
         </div>
 
         <div class="row">
@@ -555,7 +554,7 @@
 
     <!-- DASHBOARD PREVIEW -->
     <div class="row">
-       <div
+      <div
         v-for="(widget, index) in widgets"
         :key="index"
         :class="[widget.column]"
@@ -590,7 +589,7 @@
     </div>
 
     <!-- SAVE TEMPLATE FORM-->
-    <div class="row">
+    <div class="row" >
       <card>
         <div slot="header">
           <h4 class="card-title">Save Template</h4>
@@ -689,7 +688,7 @@
     </div>
 
     <!-- JSONS -->
-    <Json :value="templates"></Json>
+    <Json :value="widgets"></Json>
   </div>
 </template>
 
@@ -803,14 +802,11 @@ export default {
       }
     };
   },
-
   mounted() {
     this.getTemplates();
   },
-
   methods: {
-
-          //Get Templates
+    //Get Templates
     async getTemplates() {
       const axiosHeaders = {
         headers: {
@@ -833,7 +829,6 @@ export default {
         return;
       }
     },
-
     //Save Template
     async saveTemplate() {
       const axiosHeaders = {
@@ -849,7 +844,6 @@ export default {
           widgets: this.widgets
         }
       };
-      
       try {
         const res = await this.$axios.post("/template", toSend, axiosHeaders);
         if (res.data.status == "success") {
@@ -870,7 +864,7 @@ export default {
         return;
       }
     },
-     //Delete Template
+    //Delete Template
     async deleteTemplate(template) {
       
       const axiosHeaders = {
@@ -903,8 +897,7 @@ export default {
         return;
       }
     },
-
-  //Add Widget
+    //Add Widget
     addNewWidget() {
       if (this.widgetType == "numberchart") {
         this.ncConfig.variable = this.makeid(10);
@@ -919,15 +912,14 @@ export default {
         this.widgets.push(JSON.parse(JSON.stringify(this.configButton)));
       }
       if (this.widgetType == "indicator") {
-        this.configIndicator.variable = this.makeid(10);
-        this.widgets.push(JSON.parse(JSON.stringify(this.configIndicator)));
+        this.iotIndicatorConfig.variable = this.makeid(10);
+        this.widgets.push(JSON.parse(JSON.stringify(this.iotIndicatorConfig)));
       }
     },
-
+    //Delete Widget
     deleteWidget(index) {
       this.widgets.splice(index, 1);
     },
-
     makeid(length) {
       var result = "";
       var characters =
