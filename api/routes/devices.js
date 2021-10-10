@@ -6,6 +6,7 @@ const axios = require("axios");
 import Device from "../models/device.js";
 import SaverRule from "../models/emqx_saver_rule.js";
 import Template from '../models/template.js';
+import AlarmRule from '../models/emqx_alarm_rule.js';
 
 /* 
   ___  ______ _____ 
@@ -41,12 +42,16 @@ router.get("/device", checkAuth, async (req, res) => {
     //get templates
     const templates = await getTemplates(userId);
 
-    console.log(templates);
+     //get alarm rules
+     const alarmRules = await getAlarmRules(userId);
+
+    // console.log(templates);
 
     //saver rules to -> devices
     devices.forEach((device, index) => {
       devices[index].saverRule = saverRules.filter(saverRule => saverRule.dId == device.dId)[0];
       devices[index].template = templates.filter(template => template._id == device.templateId)[0];
+      devices[index].alarmRules = alarmRules.filter(alarmRule => alarmRule.dId == device.dId);
     });
 
   
@@ -178,6 +183,19 @@ router.put('/saver-rule', checkAuth, async (req, res) => {
 | |   | |_| | |\  | \__/\ | |  _| |_\ \_/ / |\  |/\__/ /
 \_|    \___/\_| \_/\____/ \_/  \___/ \___/\_| \_/\____/  
 */
+
+async function getAlarmRules(userId) {
+
+  try {
+      const rules = await AlarmRule.find({ userId: userId });
+      return rules;
+  } catch (error) {
+      return "error";
+  }
+
+}
+
+
 async function selectDevice(userId, dId) {
   try {
     const result = await Device.updateMany(
