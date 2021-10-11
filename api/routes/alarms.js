@@ -48,7 +48,7 @@ router.post('/alarm-rule', checkAuth, async (req, res) => {
 
 });
 
-           //UPDATE ALARM-RULE STATUS
+//UPDATE ALARM-RULE STATUS
 router.put('/alarm-rule', checkAuth, async (req, res) => {
 
 
@@ -134,14 +134,14 @@ async function createAlarmRule(newAlarm) {
 
     //save rule in emqx - grabamos la regla en emqx
     const res = await axios.post(url, newRule, auth);
-
     var emqxRuleId = res.data.data.id;
 
     console.log(res.data.data);
 
     if (res.data.data && res.status === 200) {
 
-        //save rule in mongo -- grabamos regla en mongo
+
+        //save rule in mongo -- grabamos regla en mongo 
         const mongoRule = await AlarmRule.create({
             userId: newAlarm.userId,
             dId: newAlarm.dId,
@@ -157,8 +157,8 @@ async function createAlarmRule(newAlarm) {
 
         const url = "http://localhost:8085/api/v4/rules/" + mongoRule.emqxRuleId;
 
-        const payload_templ = '{"userId":"' + newAlarm.userId + '","dId":"' + newAlarm.dId + '","payload":${payload},"topic":"${topic}","emqxRuleId":"' + mongoRule.emqxRuleId + '","value":' + newAlarm.value + ',"condition":"' + newAlarm.condition + '","variable":"' + newAlarm.variable + '","variableFullName":"' + newAlarm.variableFullName + '","triggerTime":' + newAlarm.triggerTime + '}';
-
+        const payload_templ = '{"userId":"' + newAlarm.userId + '","dId":"' + newAlarm.dId + '","deviceName":"' + newAlarm.deviceName + '","payload":${payload},"topic":"${topic}","emqxRuleId":"' + mongoRule.emqxRuleId + '","value":' + newAlarm.value + ',"condition":"' + newAlarm.condition + '","variable":"' + newAlarm.variable + '","variableFullName":"' + newAlarm.variableFullName + '","triggerTime":' + newAlarm.triggerTime + '}';
+        
         newRule.actions[0].params.payload_tmpl = payload_templ;
 
         const res = await axios.put(url, newRule, auth);
@@ -166,7 +166,7 @@ async function createAlarmRule(newAlarm) {
         console.log("New Alarm Rule Created...".green);
 
         return true;
-
+    
     }
 
 }
@@ -214,4 +214,4 @@ async function deleteAlarmRule(emqxRuleId) {
     }
 }
 
-module.exports = router; 
+module.exports = router;
