@@ -4,8 +4,8 @@
 
     <side-bar
       :background-color="sidebarBackground"
-      short-title="KIKILMA APP"
-      title="Kikilma"
+      short-title="GL"
+      title="IoTicos GL"
     >
       <template slot-scope="props" slot="links">
         <sidebar-item
@@ -35,22 +35,20 @@
         >
         </sidebar-item>
 
-
         <sidebar-item
-        :link="{
-          name: 'Templates',
-          icon: 'tim-icons icon-chart-pie-36',
-          path: '/templates'
-        }"
-      >
-      </sidebar-item>
-
-
-
-
+          :link="{
+            name: 'Templates',
+            icon: 'tim-icons icon-chart-pie-36',
+            path: '/templates'
+          }"
+        >
+        </sidebar-item>
       </template>
     </side-bar>
+
+    <!--Share plugin (for demo purposes). You can remove it if don't plan on using it-->
     <sidebar-share :background-color.sync="sidebarBackground"> </sidebar-share>
+
     <div class="main-panel" :data="sidebarBackground">
       <dashboard-navbar></dashboard-navbar>
       <router-view name="header"></router-view>
@@ -89,7 +87,6 @@ import ContentFooter from "@/components/Layout/ContentFooter.vue";
 import DashboardContent from "@/components/Layout/Content.vue";
 import { SlideYDownTransition, ZoomCenterTransition } from "vue2-transitions";
 import mqtt from "mqtt";
-
 export default {
   components: {
     DashboardNavbar,
@@ -102,7 +99,7 @@ export default {
   data() {
     return {
       sidebarBackground: "primary", //vue|blue|orange|green|red|primary
-      client:null   
+      client:null
     };
   },
   computed: {
@@ -111,7 +108,6 @@ export default {
     }
   },
   methods: {
-
     startMqttClient() {
       const options = {
         host: "localhost",
@@ -123,7 +119,7 @@ export default {
         // Certification Information
         clientId: "web_" + this.$store.state.auth.userData.name + "_" + Math.floor(Math.random() * 1000000 + 1),
         username: "admin",
-        password: "public"
+        password: "1234"
       };
       //ex topic: "userid/did/variableId/sdata"
       const deviceSubscribeTopic = this.$store.state.auth.userData._id + "/+/+/sdata";
@@ -144,6 +140,7 @@ export default {
             return;
           }
           console.log("Device subscription Success");
+          console.log(deviceSubscribeTopic); 
         });
         //NOTIF SUBSCRIBE
         this.client.subscribe(notifSubscribeTopic, {qos:0}, (err) => {
@@ -152,6 +149,7 @@ export default {
             return;
           }
           console.log("Notif subscription Success");
+          console.log(notifSubscribeTopic);
         });
       });
       this.client.on('error', error => {
@@ -160,9 +158,28 @@ export default {
       this.client.on("reconnect", (error) => {
           console.log("reconnecting:", error);
       });
+
+      this.client.on('message', (topic, message) => {
+        console.log("Message from topic " + topic + " -> ");
+        console.log(message.toString());
+        try {
+          const splittedTopic = topic.split("/");
+          const msgType = splittedTopic[3];
+          if(msgType == "notif"){
+            this.$notify({ type: 'danger', icon: 'tim-icons icon-alert-circle-exc', message: message.toString()});
+            this.$store.dispatch("getNotifications");
+            return;
+          }else if (msgType == "sdata"){
+          }
+        } catch (error) {
+          console.log(error);
+        }
+        
+      });
     
     },
-
+      
+    
     toggleSidebar() {
       if (this.$sidebar.showSidebar) {
         this.$sidebar.displaySidebar(false);
@@ -183,8 +200,10 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch("getNotifications");
     this.initScrollbar();
     this.startMqttClient();
+    
   }
 };
 </script>
