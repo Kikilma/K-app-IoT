@@ -165,11 +165,16 @@ export default {
         try {
           const splittedTopic = topic.split("/");
           const msgType = splittedTopic[3];
+
           if(msgType == "notif"){
             this.$notify({ type: 'danger', icon: 'tim-icons icon-alert-circle-exc', message: message.toString()});
             this.$store.dispatch("getNotifications");
             return;
           }else if (msgType == "sdata"){
+
+            $nuxt.$emit(topic, JSON.parse(message.toString()));
+            return;
+
           }
         } catch (error) {
           console.log(error);
