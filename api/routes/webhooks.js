@@ -159,7 +159,7 @@ function saveNotifToMongo(incomingAlarm) {
 async function updateAlarmCounter(emqxRuleId) {
   
     try {
-       await AlarmRule.update({ emqxRuleId: emqxRuleId }, { $inc: { counter: 1 } });
+       await AlarmRule.updateOne({ emqxRuleId: emqxRuleId }, { $inc: { counter: 1 } });
     } catch (error) {
         console.log(error)
     }
