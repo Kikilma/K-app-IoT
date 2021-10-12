@@ -107,6 +107,9 @@ export default {
       return this.$route.path === "/maps/full-screen";
     }
   },
+  beforeDestroy(){
+    this.$nuxt.$off("mqtt-sender");
+  },
   methods: {
     startMqttClient() {
       const options = {
@@ -160,6 +163,7 @@ export default {
       });
 
       this.client.on('message', (topic, message) => {
+
         console.log("Message from topic " + topic + " -> ");
         console.log(message.toString());
         try {
@@ -180,6 +184,10 @@ export default {
           console.log(error);
         }
         
+      });
+      
+      $nuxt.$on('mqtt-sender', (toSend) => {
+        this.client.publish(toSend.topic, JSON.stringify(toSend.msg));
       });
     
     },
