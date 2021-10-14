@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { checkAuth } = require('../middlewares/authentication.js');
 
-
 //models import
 import User from "../models/user.js";
 import EmqxAuthRule from "../models/emqx_auth.js";
@@ -12,60 +11,49 @@ import EmqxAuthRule from "../models/emqx_auth.js";
 //POST -> req.body
 //GET -> req.query
 
-//AUTH
-
-//================LOGIN=======================
+//LOGIN
 router.post("/login", async (req, res) => {
-
-
   const email = req.body.email;
   const password = req.body.password;
 
-  var user = await User.findOne({email: email});
+  var user = await User.findOne({ email: email });
 
   //if no email
-  if(!user){
-      const toSend = {
-          status: "error",
-          error: "Invalid Credentials"
-      }
-      return res.status(401).json(toSend);
+  if (!user) {
+    const toSend = {
+      status: "error",
+      error: "Invalid Credentials"
+    };
+    return res.status(401).json(toSend);
   }
 
   //if email and email ok
-  if (bcrypt.compareSync(password, user.password)){
+  if (bcrypt.compareSync(password, user.password)) {
+    user.set("password", undefined, { strict: false });
 
-      user.set('password', undefined, {strict: false});
+    const token = jwt.sign({ userData: user }, "securePasswordHere", {
+      expiresIn: 60 * 60 * 24 * 30
+    });
 
-      const token = jwt.sign({userData: user}, 'securePasswordHere', {expiresIn: 60 * 60 * 24 * 30});
+    const toSend = {
+      status: "success",
+      token: token,
+      userData: user
+    };
 
-      const toSend = {
-          status: "success",
-          token: token,
-          userData: user
-      }
-
-      return res.json(toSend);
-
-  }else{
-      const toSend = {
-          status: "error",
-          error: "Invalid Credentials"
-      }
-      return res.status(401).json(toSend);
+    return res.json(toSend);
+  } else {
+    const toSend = {
+      status: "error",
+      error: "Invalid Credentials"
+    };
+    return res.status(401).json(toSend);
   }
-
-//=====================END-LOGIN====================
-//=====================END-LOGIN====================
-
 });
 
-
-
-//===================REGISTER=====================
+//REGISTER
 router.post("/register", async (req, res) => {
   try {
-
     const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
@@ -86,23 +74,21 @@ router.post("/register", async (req, res) => {
     };
 
     res.status(200).json(toSend);
-
   } catch (error) {
-      
-      console.log("ERROR - REGISTER ENDPOINT")
-      console.log(error);
+    console.log("ERROR - REGISTER ENDPOINT");
+    console.log(error);
 
-      const toSend = {
-        status: "error",
-        error: error
-      };
+    const toSend = {
+      status: "error",
+      error: error
+    };
 
-      res.status(500).json(toSend);
+    console.log(toSend);
 
+    return res.status(500).json(toSend);
   }
-  //===============END-REGISTER========================
-  //===============END-REGISTER========================
 });
+
 
 //GET MQTT WEB CREDENTIALS
 router.post("/getmqttcredentials", checkAuth,  async (req, res) => {
@@ -111,8 +97,21 @@ router.post("/getmqttcredentials", checkAuth,  async (req, res) => {
     const userId = req.userData._id;
 
     const credentials = await getWebUserMqttCredentials(userId);
+ 
+    const toSend = {
+      status: "success",
+      username: credentials.username,
+      password: credentials.password
+    }
 
-    res.json(credentials);
+    res.json(toSend);
+
+    setTimeout(() => {
+      getWebUserMqttCredentials(userId);
+    }, 5000);
+    
+
+    return 
 
   } catch (error) {
     console.log(error);
@@ -170,8 +169,8 @@ async function getWebUserMqttCredentials(userId){
 
     if (result.n == 1 && result.ok == 1) {
         return {
-            mqttUsername: newUserName,
-            mqttPassword: newPassword
+            username: newUserName,
+            password: newPassword
         }
     }else{
         return false;
