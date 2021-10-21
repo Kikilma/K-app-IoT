@@ -126,7 +126,7 @@
             this.updateColorClass();
         },
         beforeDestroy() {
-            this.$nuxt.$on(this.config.userId + '/' + this.config.selectedDevice.dId + '/' + this.config.variable + "/sdata", this.procesReceivedData);
+            this.$nuxt.$off(this.config.userId + '/' + this.config.selectedDevice.dId + '/' + this.config.variable + "/sdata", this.procesReceivedData);
         },
         methods: {
             updateColorClass() {
@@ -154,13 +154,14 @@
                 }
                 const axiosHeaders = {
                     headers: {
-                        token: $nuxt.$store.state.auth.accessToken,
+                        token: $nuxt.$store.state.auth.token,
                     },
                     params: { dId: this.config.selectedDevice.dId, variable: this.config.variable, chartTimeAgo: this.config.chartTimeAgo }
                 }
                 this.$axios.get("/get-small-charts-data", axiosHeaders)
                     .then(res => {
-                        
+
+                        this.chartOptions.series[0].data = [];
                         const data = res.data.data;
                         console.log(res.data)
                         data.forEach(element => {
@@ -194,6 +195,12 @@
             procesReceivedData(data) {
                 this.time = Date.now();
                 this.value = data.value;
+
+                setTimeout(() => {
+                    if(data.save==1){
+                        this.getChartData();
+                    }  
+                }, 1000);
             },
             getNow() {
                 this.nowTime = Date.now();

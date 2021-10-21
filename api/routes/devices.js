@@ -8,6 +8,7 @@ import SaverRule from "../models/emqx_saver_rule.js";
 import Template from '../models/template.js';
 import AlarmRule from '../models/emqx_alarm_rule.js';
 
+
 /* 
   ___  ______ _____ 
  / _ \ | ___ \_   _|
@@ -27,7 +28,6 @@ const auth = {
 //GET DEVICES
 router.get("/device", checkAuth, async (req, res) => {
   try {
-
     const userId = req.userData._id;
 
     //get devices
@@ -39,13 +39,14 @@ router.get("/device", checkAuth, async (req, res) => {
     //get saver rules
     const saverRules = await getSaverRules(userId);
 
+
     //get templates
     const templates = await getTemplates(userId);
 
-     //get alarm rules
-     const alarmRules = await getAlarmRules(userId);
 
-    // console.log(templates);
+    //get alarm rules
+    const alarmRules = await getAlarmRules(userId);
+
 
     //saver rules to -> devices
     devices.forEach((device, index) => {
@@ -54,7 +55,6 @@ router.get("/device", checkAuth, async (req, res) => {
       devices[index].alarmRules = alarmRules.filter(alarmRule => alarmRule.dId == device.dId);
     });
 
-  
     const toSend = {
       status: "success",
       data: devices
@@ -77,12 +77,15 @@ router.get("/device", checkAuth, async (req, res) => {
 //NEW DEVICE
 router.post("/device", checkAuth, async (req, res) => {
   try {
+
     const userId = req.userData._id;
+    
     var newDevice = req.body.newDevice;
 
     newDevice.userId = userId;
+
     newDevice.createdTime = Date.now();
-    
+
     await createSaverRule(userId, newDevice.dId, true);
 
     const device = await Device.create(newDevice);
@@ -116,8 +119,6 @@ router.delete("/device", checkAuth, async (req, res) => {
     await deleteSaverRule(dId);
 
     const result = await Device.deleteOne({ userId: userId, dId: dId });
-
-    
 
     const toSend = {
       status: "success",
@@ -160,8 +161,6 @@ router.put("/device", checkAuth, async (req, res) => {
 
 //SAVER-RULE STATUS UPDATER
 router.put('/saver-rule', checkAuth, async (req, res) => {
-
-  
   const rule = req.body.rule;
 
   console.log(rule);
@@ -173,10 +172,10 @@ router.put('/saver-rule', checkAuth, async (req, res) => {
   };
 
   res.json(toSend);
- 
 });
 
-/* ______ _   _ _   _ _____ _____ _____ _____ _   _  _____ 
+/* 
+______ _   _ _   _ _____ _____ _____ _____ _   _  _____ 
 |  ___| | | | \ | /  __ \_   _|_   _|  _  | \ | |/  ___|
 | |_  | | | |  \| | /  \/ | |   | | | | | |  \| |\ `--. 
 |  _| | | | | . ` | |     | |   | | | | | | . ` | `--. \
@@ -194,7 +193,6 @@ async function getAlarmRules(userId) {
   }
 
 }
-
 
 async function selectDevice(userId, dId) {
   try {
@@ -215,9 +213,11 @@ async function selectDevice(userId, dId) {
     return false;
   }
 }
+
 /*
  SAVER RULES FUNCTIONS
 */
+
 
 //get templates
 async function getTemplates(userId) {
@@ -238,14 +238,18 @@ async function getSaverRules(userId) {
     return false;
   }
 }
+
 //create saver rule
 async function createSaverRule(userId, dId, status) {
   console.log(userId);
   console.log(dId);
   console.log(status);
+
   try {
     const url = "http://localhost:8085/api/v4/rules";
+
     const topic = userId + "/" + dId + "/+/sdata";
+
     const rawsql =
       'SELECT topic, payload FROM "' + topic + '" WHERE payload.save = 1';
 
@@ -270,9 +274,8 @@ async function createSaverRule(userId, dId, status) {
     //save rule in emqx - grabamos la regla en emqx
     const res = await axios.post(url, newRule, auth);
     console.log(res.data.data);
-    if (res.status === 200 && res.data.data) {
-      
 
+    if (res.status === 200 && res.data.data) {
       await SaverRule.create({
         userId: userId,
         dId: dId,
@@ -293,28 +296,25 @@ async function createSaverRule(userId, dId, status) {
 
 //update saver rule
 async function updateSaverRuleStatus(emqxRuleId, status) {
-
   try {
     const url = "http://localhost:8085/api/v4/rules/" + emqxRuleId;
 
     const newRule = {
       enabled: status
     };
-  
+
     const res = await axios.put(url, newRule, auth);
-  
+
     if (res.status === 200 && res.data.data) {
       await SaverRule.updateOne({ emqxRuleId: emqxRuleId }, { status: status });
       console.log("Saver Rule Status Updated...".green);
       return true;
-    }else{
+    } else {
       return false;
     }
-
   } catch (error) {
     return false;
   }
-
 }
 
 //delete saver rule

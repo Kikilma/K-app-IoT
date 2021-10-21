@@ -18,7 +18,7 @@ export default [
   {
     id: 3,
     name: 'Colton Koch',
-    nickname: 'id',
+    nickname: 'kikilma',
     email: 'little.myrna@example.net',
     salary: '€ 26278.00',
     age: 48
