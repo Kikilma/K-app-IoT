@@ -152,6 +152,7 @@
                     this.isMounted = true;
                     return;
                 }
+ 
                 const axiosHeaders = {
                     headers: {
                         token: $nuxt.$store.state.auth.token,
@@ -160,7 +161,7 @@
                 }
                 this.$axios.get("/get-small-charts-data", axiosHeaders)
                     .then(res => {
-
+                        
                         this.chartOptions.series[0].data = [];
                         const data = res.data.data;
                         console.log(res.data)
@@ -195,12 +196,12 @@
             procesReceivedData(data) {
                 this.time = Date.now();
                 this.value = data.value;
-
                 setTimeout(() => {
                     if(data.save==1){
                         this.getChartData();
                     }  
                 }, 1000);
+               
             },
             getNow() {
                 this.nowTime = Date.now();
