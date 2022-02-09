@@ -162,7 +162,7 @@ router.put("/device", checkAuth, async (req, res) => {
 });
 
 //SAVER-RULE STATUS UPDATER
-router.put('/saver-rule', checkAuth, async (req, res) => {
+router.put("/saver-rule", checkAuth, async (req, res) => {
   const rule = req.body.rule;
 
   console.log(rule);
@@ -252,8 +252,7 @@ async function createSaverRule(userId, dId, status) {
 
     const topic = userId + "/" + dId + "/+/sdata";
 
-    const rawsql =
-      'SELECT topic, payload FROM "' + topic + '" WHERE payload.save = 1';
+    const rawsql = "SELECT topic, payload FROM \"" + topic + "\" WHERE payload.save = 1";
 
     var newRule = {
       rawsql: rawsql,
@@ -348,7 +347,6 @@ function makeid(length) {
   }
   return result;
 }
-
 
 module.exports = router;
 
