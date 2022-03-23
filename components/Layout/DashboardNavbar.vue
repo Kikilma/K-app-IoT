@@ -49,16 +49,20 @@
           <p class="d-lg-none">New Notifications</p>
         </template>
 
-        <li @click="notificationReaded(notification._id)" v-for="notification in $store.state.notifications" class="nav-link">
+        <li
+          @click="notificationReaded(notification._id)"
+          v-for="notification in $store.state.notifications"
+          class="nav-link"
+        >
           <a href="#" class="nav-item dropdown-item">
-            <b style="color:orangered">{{ unixToDate(notification.time)}}</b>
-              <div style="margin-left:50px">
-                <b>Device: </b> {{notification.deviceName}} <br>
-                <b>Variable: </b> {{notification.variableFullName}} <br>
-                <b>Condition: </b> {{notification.condition}} <br>
-                <b>Limit: </b> {{notification.value}} <br>
-                <b>Value: </b> {{notification.payload.value}}
-              </div>    
+            <b style="color:orangered">{{ unixToDate(notification.time) }}</b>
+            <div style="margin-left:50px">
+              <b>Device: </b> {{ notification.deviceName }} <br />
+              <b>Variable: </b> {{ notification.variableFullName }} <br />
+              <b>Condition: </b> {{ notification.condition }} <br />
+              <b>Limit: </b> {{ notification.value }} <br />
+              <b>Value: </b> {{ notification.payload.value }}
+            </div>    
           </a>
         </li>
 
@@ -75,7 +79,7 @@
         <template slot="title">
           <div class="photo"><img src="img/mike.jpg" /></div>
           <b class="caret d-none d-lg-block d-xl-block"></b>
-          <p class="d-lg-none">Log out</p>
+          <p @click="logOut()" class="d-lg-none">Log out</p>
         </template>
         <li class="nav-link">
           <a href="#" class="nav-item dropdown-item">Profile</a>
@@ -85,7 +89,7 @@
         </li>
         <div class="dropdown-divider"></div>
         <li class="nav-link">
-          <a href="#" class="nav-item dropdown-item">Log out</a>
+          <a href="#" @click="logOut()" class="nav-item dropdown-item">Log out</a>
         </li>
       </base-dropdown>
     </ul>
@@ -130,11 +134,11 @@ export default {
     
     this.$nuxt.$on("selectedDeviceIndex", this.updateSelectedDeviceIndex);
   },
-  beforeDestroy(){
+  beforeDestroy() {
     this.$nuxt.$off("selectedDeviceIndex");
   },
   methods: {
-    updateSelectedDeviceIndex(index){
+    updateSelectedDeviceIndex(index) {
       this.selectedDevice = index;
     },
     notificationReaded(notifId) {
@@ -143,6 +147,9 @@ export default {
           token: this.$store.state.auth.token
         }
       };
+
+      var auto; 
+
       const toSend = {
         notifId: notifId
       };
@@ -156,6 +163,14 @@ export default {
           console.log(e);
           return;
         });
+    },
+    logOut() {
+      console.log("logout");
+      localStorage.clear();
+      const auth = {};
+      this.$store.commit("setAuth", auth);
+      window.location.href = "/login";
+
     },
     selectDevice() {
       const device = this.$store.state.devices[this.selectedDevice];
@@ -180,26 +195,27 @@ export default {
     },
     //UNIX A FECHA
     unixToDate(ms) {
-        var d = new Date(parseInt(ms)), 
-          yyyy = d.getFullYear(),
-          mm = ('0' + (d.getMonth() + 1)).slice(-2), // Months are zero based. Add leading 0.
-          dd = ('0' + d.getDate()).slice(-2), // Add leading 0.
-          hh = d.getHours(),
-          h = hh,
-          min = ('0' + d.getMinutes()).slice(-2), // Add leading 0.
-          ampm = 'AM',
-          time;
-        if (hh > 12) {
-          h = hh - 12;
-          ampm = 'PM';
-        } else if (hh === 12) {
-          h = 12;
-          ampm = 'PM';
-        } else if (hh == 0) {
-          h = 12;
-        }
-        // ie: 2013-02-18, 8:35 AM	
-        time = dd + '/' + mm + '/' + yyyy + ', ' + h + ':' + min + ' ' + ampm;
+        var d = new Date(parseInt(ms)),
+        yyyy = d.getFullYear(),
+        mm = ("0" + (d.getMonth() + 1)).slice(-2), // Months are zero based. Add leading 0.
+        dd = ("0" + d.getDate()).slice(-2), // Add leading 0.
+        hh = d.getHours(),
+        h = hh,
+        min = ("0" + d.getMinutes()).slice(-2), // Add leading 0.
+        ampm = "AM",
+        time;
+      if (hh > 12) {
+        h = hh - 12;
+        ampm = "PM";
+      } else if (hh === 12) {
+        h = 12;
+        ampm = "PM";
+      } else if (hh == 0) {
+        h = 12;
+      }
+
+        // ie: 2013-02-18, 8:35 AM
+        time = dd + "/" + mm + "/" + yyyy + ", " + h + ":" + min + " " + ampm;
         return time;
       },
     capitalizeFirstLetter(string) {

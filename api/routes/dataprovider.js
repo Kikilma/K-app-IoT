@@ -1,12 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { checkAuth } = require('../middlewares/authentication.js');
+const { checkAuth } = require("../middlewares/authentication.js");
 
 //models import
-import Data from '../models/data.js';
+import Data from "../models/data.js";
 
 
-router.get('/get-small-charts-data', checkAuth, async (req, res) => {
+router.get("/get-small-charts-data", checkAuth, async (req, res) => {
 
   try {
 
@@ -15,15 +15,14 @@ router.get('/get-small-charts-data', checkAuth, async (req, res) => {
     const dId = req.query.dId;
     const variable = req.query.variable;
 
-
     const timeAgoMs = Date.now() - (chartTimeAgo * 60 * 1000 );
 
-    console.log(userId)
-    console.log(variable)
-    console.log(dId)
+    //console.log(userId)
+    //console.log(variable)
+    //console.log(dId)
 
     const data =  await Data.find({userId: userId, dId:dId, variable: variable, "time": {$gt: timeAgoMs}}).sort({"time":1});
-    console.log(data);
+    //console.log(data);
 
     const response = {
       status: "success",

@@ -12,7 +12,7 @@
         <sidebar-item
           :link="{
             name: 'Dashboard',
-            icon: 'tim-icons icon-chart-pie-36',
+            icon: 'tim-icons icon-laptop',
             path: '/dashboard'
           }"
         >
@@ -21,7 +21,7 @@
         <sidebar-item
           :link="{
             name: 'Devices',
-            icon: 'tim-icons icon-chart-pie-36',
+            icon: 'tim-icons icon-light-3',
             path: '/devices'
           }"
         >
@@ -30,7 +30,7 @@
         <sidebar-item
           :link="{
             name: 'Alarms',
-            icon: 'tim-icons icon-chart-pie-36',
+            icon: 'tim-icons icon-bell-55',
             path: '/alarms'
           }"
         >
@@ -39,7 +39,7 @@
         <sidebar-item
           :link="{
             name: 'Templates',
-            icon: 'tim-icons icon-chart-pie-36',
+            icon: 'tim-icons icon-atom',
             path: '/templates'
           }"
         >
@@ -156,6 +156,11 @@ export default {
         }
       } catch (error) {
         console.log(error);
+         if (error.response.status == 401) {
+          console.log("NO VALID TOKEN");
+          localStorage.clear();
+          window.location.href = "/login";
+        }
       }
     },
     async getMqttCredentialsForReconnection() {

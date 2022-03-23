@@ -326,6 +326,9 @@ export default {
             this.newRule.condition = null;
             this.newRule.value = null;
             this.newRule.triggerTime = null;
+            this.selectedWidgetIndex = null;
+
+            
             this.$notify({
               type: "success",
               icon: "tim-icons icon-check-2",

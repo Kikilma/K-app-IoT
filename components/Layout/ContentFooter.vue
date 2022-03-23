@@ -37,7 +37,7 @@
         &copy; {{ year }}, made with <i class="tim-icons icon-heart-2"></i> by
         
         <a
-          href="https://www.creative-tim.com/?ref=pdf-vuejs"
+          href="http://kikilma.tech"
           target="_blank"
           rel="noopener"
           >Kikílma</a
