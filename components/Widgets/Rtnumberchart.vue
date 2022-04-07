@@ -1,3 +1,4 @@
+9 lines (226 sloc) 8.53 KB
 <template>
 
 
@@ -5,7 +6,6 @@
 
         <template slot="header">
 
-            
 
             <h5 class="card-category pull-right">{{getTimeAgo((nowTime - time) / 1000)}} ago </h5>
 
@@ -200,8 +200,6 @@
                 }
             },
             procesReceivedData(data) {
-                
-
                 try {
                     this.time = Date.now();
                     this.value = data.value;

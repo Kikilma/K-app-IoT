@@ -21,40 +21,38 @@ export default {
     return {
       value: false,
       topic: "",
-      props: ['config'] 
+      props: ['config']      
     };
   },
   watch:  {
-           config: {
-               immediate: true,
-               deep: true,
-               handler() {
-                   setTimeout(() => {
-                       this.value = false;
-                       this.$nuxt.$off(this.topic);
-                       //userId/dId/uniquestr/sdata
-                       const topic = this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable + "/sdata";
-                       this.$nuxt.$on(topic, this.processReceivedData);
-                   }, 300);
+            config: {
+                immediate: true,
+                deep: true,
+                handler() {
+                    setTimeout(() => {
+                        this.value = false;
+                        this.$nuxt.$off(this.topic);
+                        //userId/dId/uniquestr/sdata
+                        const topic = this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable + "/sdata";
+                        this.$nuxt.$on(topic, this.processReceivedData);
+                    }, 300);
                 }
             }
         },
   mounted(){
-      
     const topic = this.config.userId + "/" + this.config.selectedDevice.dId + "/" + this.config.variable + "/sdata";
     this.$nuxt.$on(topic, this.processReceivedData);
   },
   beforeDestroy(){
-    
-    this.$nuxt.$off(this.topic);  },
-
+    this.$nuxt.$off(this.topic);
+  },
   methods: {
     processReceivedData(data){
       try {
         console.log("received");
         console.log(data);
         this.value = data.value;
-             } catch (error) {
+      } catch (error) {
         console.log(error);
       }
     },
