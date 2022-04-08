@@ -98,7 +98,9 @@ router.delete("/alarm-rule", checkAuth, async (req, res) => {
   }
 });
 
-
+router.get("/pruebagaby",  async (req, res) => {
+  res.json("Hola Gaby");
+});
 
 //**********************
 //**** FUNCTIONS *******
