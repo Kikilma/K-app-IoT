@@ -34,8 +34,8 @@ Para borrar manualmente los recursos y reiniciemos node */
 async function listResources() {
 
 try {
-    const url = "http://localhost:8085/api/v4/resources/";
-
+  const url = "http://"+process.env.EMQX_NODE_HOST+":8085/api/v4/resources/";
+  
     const res = await axios.get(url, auth);
   
     const size = res.data.data.length;
