@@ -187,6 +187,7 @@ global.check_mqtt_superuser = async function checkMqttSuperUser(){
 
 
 setTimeout(() => {
+  console.log("LISTING RESORUCES!!!!!!!!!");
   listResources();
 }, proces.env.EMQX_RESOURCES_DELAY);
 
