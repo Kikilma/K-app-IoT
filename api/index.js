@@ -57,6 +57,8 @@ var uri =
   "/" +
   mongoDatabase;
 
+  console.log(uri);
+
 const options = {
   useNewUrlParser: true,
   useCreateIndex: true,
@@ -68,9 +70,9 @@ const options = {
 mongoose.connect(uri, options).then(
   () => {
     console.log("\n");
-    console.log("*******************************".green);
-    console.log("✔ Mongo Successfully Connected!".green);
-    console.log("*******************************".green);
+    console.log("********************************".green);
+    console.log("✔ Mongo Successfully Connected! ".green);
+    console.log("********************************".green);
     console.log("\n");
     global.check_mqtt_superuser();
   },
