@@ -5,6 +5,8 @@ const morgan = require("morgan");
 const cors = require("cors");
 const colors = require("colors");
 
+import EmqxAuthRule from "../models/emqx_auth.js";
+
 require('dotenv').config();
 
 //instances
@@ -80,3 +82,39 @@ mongoose.connect(uri, options).then(
     console.log(err);
   }
 );
+
+
+async function checkMqttSuperUser(){
+
+  try {
+    const superusers = await EmqxAuthRule.find({type:"superuser"});
+
+    if (superusers.length > 0 ) {
+
+      return;
+
+    }else if ( superusers.length == 0 ) {
+
+      await EmqxAuthRule.create(
+        {
+          publish: ["#"],
+          subscribe: ["#"],
+          userId: "aaaaaaaaaaa",
+          username: "admin",
+          password: "pulic",
+          type: "superuser",
+          time: Date.now,
+          updatedTime: Date.now
+        }
+      );
+
+      console.log("Mqtt super user created")
+
+    }
+  } catch (error) {
+    console.log("error creating mqtt superuser ");
+    console.log(error);
+  }
+
+
+}
